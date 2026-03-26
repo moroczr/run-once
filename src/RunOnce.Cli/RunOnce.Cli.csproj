@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>RunOnce</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>run-once</ToolCommandName>
+    <Description>CLI tool for executing versioned work items with RunOnce.</Description>
+    <RollForward>Major</RollForward>
+    <PackageTags>run-once;cli;dotnet-tool;migrations</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RunOnce.Core\RunOnce.Core.csproj" />
+    <ProjectReference Include="..\RunOnce.Persistence.SqlServer\RunOnce.Persistence.SqlServer.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\RunOnce.Persistence.DynamoDb\RunOnce.Persistence.DynamoDb.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

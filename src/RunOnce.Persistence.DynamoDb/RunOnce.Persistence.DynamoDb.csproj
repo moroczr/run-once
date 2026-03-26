@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>RunOnce.Persistence.DynamoDb</PackageId>
+    <Description>DynamoDB persistence provider for RunOnce.</Description>
+    <PackageTags>run-once;dynamodb;aws;persistence</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RunOnce.Abstractions\RunOnce.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

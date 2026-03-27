@@ -18,8 +18,9 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException(
                 "A persistence provider must be configured. Call options.UseProvider(...) or a provider-specific extension method.");
 
-        services.AddSingleton(options.Provider);
-        services.AddSingleton<IPersistenceProvider>(sp => sp.GetRequiredService<IPersistenceProvider>());
+        var providerType = options.Provider.GetType();
+        services.AddSingleton(providerType, options.Provider);
+        services.AddSingleton<IPersistenceProvider>(sp => (IPersistenceProvider)sp.GetRequiredService(providerType));
 
         if (options.Assembly != null)
         {

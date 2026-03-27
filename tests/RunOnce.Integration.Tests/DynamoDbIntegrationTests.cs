@@ -1,10 +1,10 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using RunOnce.Abstractions;
+using RunOnce.Core.DependencyInjection;
 using RunOnce.Core.Discovery;
 using RunOnce.Core.Execution;
 using RunOnce.Persistence.DynamoDb;
@@ -12,16 +12,15 @@ using Xunit;
 
 namespace RunOnce.Integration.Tests;
 
-/// <summary>
-/// Integration tests for DynamoDB persistence.
-/// Set env var RUNONCE_TEST_DYNAMODB to a region or LocalStack endpoint (e.g. http://localhost:4566).
-/// </summary>
+[Collection(DynamoDbCollection.Name)]
 public class DynamoDbIntegrationTests
 {
-    private readonly string? _endpoint = Environment.GetEnvironmentVariable("RUNONCE_TEST_DYNAMODB");
+    private readonly DynamoDbContainerFixture _dynamo;
+
+    public DynamoDbIntegrationTests(DynamoDbContainerFixture dynamo) => _dynamo = dynamo;
 
     private DynamoDbPersistenceProvider CreateProvider() =>
-        new DynamoDbPersistenceProvider(_endpoint!);
+        new DynamoDbPersistenceProvider(_dynamo.Client);
 
     private IServiceProvider BuildServices(IPersistenceProvider provider)
     {
@@ -32,12 +31,9 @@ public class DynamoDbIntegrationTests
         return services.BuildServiceProvider();
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task FullRoundTrip_Up_List_Down()
     {
-        Skip.If(_endpoint == null,
-            "RUNONCE_TEST_DYNAMODB not set. Skipping DynamoDB integration tests.");
-
         var provider = CreateProvider();
         var services = BuildServices(provider);
 
@@ -82,6 +78,26 @@ public class DynamoDbIntegrationTests
         // Cleanup
         await provider.RemoveExecutionAsync("INT_DYN_001");
         await provider.RemoveExecutionAsync("INT_DYN_002");
+    }
+
+    [Fact]
+    public void UseDynamoDb_Client_Overload_Registers_Provider_Via_AddRunOnce()
+    {
+        var services = new ServiceCollection();
+        services.AddRunOnce(o => o
+            .UseDynamoDb(_dynamo.Client)
+            .UseAssembly(typeof(DynSimpleWorkItem).Assembly));
+
+        var sp = services.BuildServiceProvider();
+
+        // IPersistenceProvider must resolve without throwing
+        var resolved = sp.GetService<IPersistenceProvider>();
+        resolved.Should().NotBeNull();
+        resolved.Should().BeOfType<DynamoDbPersistenceProvider>();
+
+        // Concrete type must also resolve and be the same instance
+        var concrete = sp.GetService<DynamoDbPersistenceProvider>();
+        concrete.Should().BeSameAs(resolved);
     }
 }
 

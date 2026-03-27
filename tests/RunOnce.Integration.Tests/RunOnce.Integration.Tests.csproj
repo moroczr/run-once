@@ -12,6 +12,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Xunit.SkippableFact" />
+    <PackageReference Include="Testcontainers.DynamoDb" />
+    <PackageReference Include="Testcontainers.MsSql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RunOnce.Core\RunOnce.Core.csproj" />

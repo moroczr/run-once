@@ -12,16 +12,15 @@ using Xunit;
 
 namespace RunOnce.Integration.Tests;
 
-/// <summary>
-/// Integration tests for SQL Server persistence.
-/// Set env var RUNONCE_TEST_SQLSERVER to a valid connection string to run these tests.
-/// </summary>
+[Collection(SqlServerCollection.Name)]
 public class SqlServerIntegrationTests
 {
-    private readonly string? _connectionString = Environment.GetEnvironmentVariable("RUNONCE_TEST_SQLSERVER");
+    private readonly SqlServerContainerFixture _sqlServer;
+
+    public SqlServerIntegrationTests(SqlServerContainerFixture sqlServer) => _sqlServer = sqlServer;
 
     private SqlServerPersistenceProvider CreateProvider() =>
-        new SqlServerPersistenceProvider(_connectionString!);
+        new SqlServerPersistenceProvider(_sqlServer.ConnectionString);
 
     private IServiceProvider BuildServices(IPersistenceProvider provider)
     {
@@ -32,16 +31,12 @@ public class SqlServerIntegrationTests
         return services.BuildServiceProvider();
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task FullRoundTrip_Up_List_Down()
     {
-        Skip.If(_connectionString == null,
-            "RUNONCE_TEST_SQLSERVER not set. Skipping SQL Server integration tests.");
-
         var provider = CreateProvider();
         var services = BuildServices(provider);
 
-        // Cleanup any previous test data
         await provider.EnsureSchemaAsync();
         await provider.RemoveExecutionAsync("INT_SQL_001");
         await provider.RemoveExecutionAsync("INT_SQL_002");
@@ -84,12 +79,9 @@ public class SqlServerIntegrationTests
         await provider.RemoveExecutionAsync("INT_SQL_002");
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Failed_Item_Is_Retryable()
     {
-        Skip.If(_connectionString == null,
-            "RUNONCE_TEST_SQLSERVER not set. Skipping SQL Server integration tests.");
-
         var provider = CreateProvider();
         var services = BuildServices(provider);
 

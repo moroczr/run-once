@@ -113,7 +113,7 @@ public class DynamoDbPersistenceProvider : IPersistenceProvider
         };
 
         var response = await _client.QueryAsync(request, ct);
-        return response.Count > 0;
+        return response.Items.Count > 0;
     }
 
     public async Task RecordExecutionAsync(WorkItemRecord record, CancellationToken ct = default)
@@ -222,7 +222,7 @@ public class DynamoDbPersistenceProvider : IPersistenceProvider
             BatchId = item["BatchId"].S,
             ExecutedAt = DateTimeOffset.Parse(item["ExecutedAt"].S),
             AssemblyQualifiedName = item["AssemblyQualifiedName"].S,
-            Success = item["Success"].BOOL,
+            Success = item["Success"].BOOL ?? false,
             ErrorMessage = item.TryGetValue("ErrorMessage", out var err) ? err.S : null
         };
     }

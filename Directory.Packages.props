@@ -6,11 +6,12 @@
     <!-- DI Abstractions -->
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <!-- SQL Server -->
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <!-- DynamoDB -->
-    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.403.7" />
+    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.17.1" />
     <!-- CLI -->
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <!-- Test -->

@@ -27,7 +27,13 @@ public class WorkItemDiscoverer
             }
             catch (ReflectionTypeLoadException ex)
             {
-                types = ex.Types.Where(t => t != null).Select(t => t!);
+                var loaderErrors = ex.LoaderExceptions
+                    .Where(e => e != null)
+                    .Select(e => e!.Message);
+                throw new InvalidOperationException(
+                    $"Failed to load types from assembly '{assembly.FullName}'. " +
+                    $"Ensure all dependencies are resolvable. Loader errors: {string.Join("; ", loaderErrors)}",
+                    ex);
             }
 
             foreach (var type in types)

@@ -19,14 +19,20 @@ public static class ContainerBuilder
 
         services.AddSingleton(provider);
 
-        var loader = new RunOnce.Core.Discovery.AssemblyLoader();
         var assemblies = new List<Assembly>();
 
+        using var ctx = assemblyPath != null
+            ? new DepsJsonAssemblyLoadContext(assemblyPath)
+            : null;
+
         if (assemblyPath != null)
-            assemblies.Add(loader.LoadFrom(assemblyPath));
+            assemblies.Add(ctx!.LoadAssembly(assemblyPath));
 
         if (directoryPath != null)
+        {
+            var loader = new RunOnce.Core.Discovery.AssemblyLoader();
             assemblies.AddRange(loader.LoadFromDirectory(directoryPath));
+        }
 
         if (assemblies.Count > 0)
         {
